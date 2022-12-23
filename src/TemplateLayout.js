@@ -9,7 +9,7 @@ const templateCache = require("./TemplateCache");
 const debugDev = require("debug")("Dev:Eleventy:TemplateLayout");
 
 class TemplateLayout extends TemplateContent {
-  constructor(key, inputDir, extensionMap, config) {
+  constructor(key, inputDir, extensionMap, config, fs) {
     if (!config) {
       throw new Error("Expected `config` in TemplateLayout constructor.");
     }
@@ -21,7 +21,9 @@ class TemplateLayout extends TemplateContent {
       config
     ).getFullPath();
 
-    super(resolvedPath, inputDir, config);
+    super(resolvedPath, inputDir, config, fs);
+
+    this.fs = fs;
 
     if (!extensionMap) {
       throw new Error("Expected `extensionMap` in TemplateLayout constructor.");
@@ -44,13 +46,13 @@ class TemplateLayout extends TemplateContent {
         return templateCache.get(fullKey);
       }
 
-      let tmpl = new TemplateLayout(key, inputDir, extensionMap, config);
+      let tmpl = new TemplateLayout(key, inputDir, extensionMap, config, this.fs);
       debugDev("Added %o to TemplateCache", key);
       templateCache.add(fullKey, tmpl);
 
       return tmpl;
     } else {
-      return new TemplateLayout(key, inputDir, extensionMap, config);
+      return new TemplateLayout(key, inputDir, extensionMap, config, this.fs);
     }
   }
 
@@ -137,11 +139,7 @@ class TemplateLayout extends TemplateContent {
     let fns = [];
     try {
       for (let layoutEntry of layoutMap) {
-        fns.push(
-          await layoutEntry.template.compile(
-            await layoutEntry.template.getPreRender()
-          )
-        );
+        fns.push(await layoutEntry.template.compile(await layoutEntry.template.getPreRender()));
       }
     } catch (e) {
       debugDev("Clearing TemplateCache after error.");

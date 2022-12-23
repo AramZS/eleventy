@@ -2,6 +2,7 @@ const EleventyExtensionMap = require("../src/EleventyExtensionMap");
 const TemplateConfig = require("../src/TemplateConfig");
 const Template = require("../src/Template");
 const FileSystemSearch = require("../src/FileSystemSearch");
+const fs = require("graceful-fs");
 
 module.exports = function getNewTemplate(
   path,
@@ -20,5 +21,5 @@ module.exports = function getNewTemplate(
   if (templateData) {
     templateData.setFileSystemSearch(new FileSystemSearch());
   }
-  return new Template(path, inputDir, outputDir, templateData, map, eleventyConfig);
+  return new Template(path, inputDir, outputDir, templateData, map, eleventyConfig, fs);
 };

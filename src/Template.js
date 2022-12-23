@@ -1,7 +1,4 @@
-const fs = require("graceful-fs");
 const util = require("util");
-const writeFile = util.promisify(fs.writeFile);
-const mkdir = util.promisify(fs.mkdir);
 
 const os = require("os");
 const path = require("path");
@@ -34,9 +31,14 @@ const debug = require("debug")("Eleventy:Template");
 const debugDev = require("debug")("Dev:Eleventy:Template");
 
 class Template extends TemplateContent {
-  constructor(templatePath, inputDir, outputDir, templateData, extensionMap, config) {
+  constructor(templatePath, inputDir, outputDir, templateData, extensionMap, config, fs) {
     debugDev("new Template(%o)", templatePath);
-    super(templatePath, inputDir, config);
+
+    super(templatePath, inputDir, config, fs);
+
+    this.fs = fs;
+    this.writeFile = util.promisify(this.fs.writeFile);
+    this.mkdir = util.promisify(this.fs.mkdir);
 
     this.parsed = path.parse(templatePath);
 
@@ -140,7 +142,8 @@ class Template extends TemplateContent {
         layoutKey,
         this.getInputDir(),
         this.config,
-        this.extensionMap
+        this.extensionMap,
+        this.fs
       );
     }
     return this._layout;
@@ -743,7 +746,7 @@ class Template extends TemplateContent {
     // TODO(@zachleat) add a cache to check if this was already created
     let templateOutputDir = path.parse(outputPath).dir;
     if (templateOutputDir) {
-      await mkdir(templateOutputDir, { recursive: true });
+      await this.mkdir(templateOutputDir, { recursive: true });
     }
 
     if (!Buffer.isBuffer(finalContent) && typeof finalContent !== "string") {
@@ -752,7 +755,7 @@ class Template extends TemplateContent {
       );
     }
 
-    return writeFile(outputPath, finalContent).then(() => {
+    return this.writeFile(outputPath, finalContent).then(() => {
       templateBenchmark.after();
       this.writeCount++;
       debug(`${outputPath} ${lang.finished}.`);
@@ -862,7 +865,8 @@ class Template extends TemplateContent {
       this.outputDir,
       this.templateData,
       this.extensionMap,
-      this.eleventyConfig
+      this.eleventyConfig,
+      this.fs
     );
 
     // preserves caches too, e.g. _frontMatterDataCache

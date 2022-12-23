@@ -3,6 +3,8 @@ const TemplateConfig = require("../src/TemplateConfig");
 const TemplateLayout = require("../src/TemplateLayout");
 const EleventyExtensionMap = require("../src/EleventyExtensionMap");
 
+const fs = require("graceful-fs");
+
 function getTemplateLayoutInstance(key, inputDir, map) {
   let eleventyConfig = new TemplateConfig();
 
@@ -12,7 +14,7 @@ function getTemplateLayoutInstance(key, inputDir, map) {
       eleventyConfig
     );
   }
-  let layout = new TemplateLayout(key, inputDir, map, eleventyConfig.getConfig());
+  let layout = new TemplateLayout(key, inputDir, map, eleventyConfig.getConfig(), fs);
   return layout;
 }
 

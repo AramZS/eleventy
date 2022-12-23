@@ -1,5 +1,7 @@
 const { TemplatePath } = require("@11ty/eleventy-utils");
 
+const fs = require("graceful-fs");
+
 const Template = require("./Template");
 const TemplateMap = require("./TemplateMap");
 const EleventyFiles = require("./EleventyFiles");
@@ -164,7 +166,8 @@ class TemplateWriter {
         this.outputDir,
         this.templateData,
         this.extensionMap,
-        this.eleventyConfig
+        this.eleventyConfig,
+        fs
       );
 
       tmpl.setOutputFormat(to);

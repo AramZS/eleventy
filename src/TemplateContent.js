@@ -1,7 +1,6 @@
 const os = require("os");
-const fs = require("graceful-fs");
 const util = require("util");
-const readFile = util.promisify(fs.readFile);
+
 const normalize = require("normalize-path");
 const matter = require("gray-matter");
 const lodashSet = require("lodash.set");
@@ -23,10 +22,11 @@ class TemplateContentCompileError extends EleventyBaseError {}
 class TemplateContentRenderError extends EleventyBaseError {}
 
 class TemplateContent {
-  constructor(inputPath, inputDir, config) {
+  constructor(inputPath, inputDir, config, fs) {
     if (!config) {
       throw new TemplateContentConfigError("Missing `config` argument to TemplateContent");
     }
+    this.readFile = util.promisify(fs.readFile);
     this.config = config;
 
     this.inputPath = inputPath;
@@ -197,7 +197,7 @@ class TemplateContent {
       content = TemplateContent.getCached(this.inputPath);
     }
     if (!content) {
-      content = await readFile(this.inputPath, "utf8");
+      content = await this.readFile(this.inputPath, "utf8");
 
       if (this.config.useTemplateCache) {
         TemplateContent.cache(this.inputPath, content);
