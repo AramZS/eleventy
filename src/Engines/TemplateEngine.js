@@ -1,4 +1,6 @@
-const fs = require("fs");
+const fs = require("graceful-fs");
+const util = require("util");
+const readFile = util.promisify(fs.readFile);
 const { TemplatePath } = require("@11ty/eleventy-utils");
 
 const TemplateConfig = require("../TemplateConfig");
@@ -142,16 +144,14 @@ class TemplateEngine {
             partialPathNoExt = TemplatePath.removeExtension(partialPathNoExt, "." + extension);
           });
 
-          return fs.promises
-            .readFile(partialFile, {
-              encoding: "utf8",
-            })
-            .then((content) => {
-              return {
-                content,
-                path: partialPathNoExt,
-              };
-            });
+          return readFile(partialFile, {
+            encoding: "utf8",
+          }).then((content) => {
+            return {
+              content,
+              path: partialPathNoExt,
+            };
+          });
         })
       );
     }

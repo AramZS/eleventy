@@ -1,7 +1,10 @@
-const fs = require("fs");
 const path = require("path");
 const lodashset = require("lodash.set");
 const lodashget = require("lodash.get");
+const fs = require("graceful-fs");
+const util = require("util");
+const fsStat = util.promisify(fs.stat);
+const readFile = util.promisify(fs.readFile);
 const { TemplatePath, isPlainObject } = require("@11ty/eleventy-utils");
 
 const merge = require("./Util/Merge");
@@ -147,7 +150,7 @@ class TemplateData {
 
   async _checkInputDir() {
     if (this.inputDirNeedsCheck) {
-      let globalPathStat = await fs.promises.stat(this.inputDir);
+      let globalPathStat = await fsStat(this.inputDir);
 
       if (!globalPathStat.isDirectory()) {
         throw new Error("Could not find data path directory: " + this.inputDir);
@@ -449,7 +452,7 @@ class TemplateData {
     }
 
     try {
-      rawInput = await fs.promises.readFile(path, encoding);
+      rawInput = await readFile(path, encoding);
     } catch (e) {
       // if file does not exist, return nothing
     }

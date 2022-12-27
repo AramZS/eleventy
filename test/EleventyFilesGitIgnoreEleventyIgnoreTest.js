@@ -7,14 +7,14 @@ const TemplateConfig = require("../src/TemplateConfig");
 
 /* .eleventyignore and .gitignore combos */
 
-test("Get ignores (no .eleventyignore no .gitignore)", (t) => {
+test("Get ignores (no .eleventyignore no .gitignore)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore1", "test/stubs/ignore1/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
 
   evf._setLocalPathRoot("./test/stubs/ignorelocalroot");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalroot/test.md",
     "./test/stubs/ignore1/_site/**",
   ]);
@@ -25,13 +25,13 @@ test("Get ignores (no .eleventyignore no .gitignore)", (t) => {
   ]);
 });
 
-test("Get ignores (no .eleventyignore)", (t) => {
+test("Get ignores (no .eleventyignore)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore2", "test/stubs/ignore2/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
   evf._setLocalPathRoot("./test/stubs/ignorelocalrootgitignore");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalrootgitignore/thisshouldnotexist12345",
     "./test/stubs/ignorelocalrootgitignore/test.md",
     "./test/stubs/ignore2/_site/**",
@@ -43,10 +43,10 @@ test("Get ignores (no .eleventyignore)", (t) => {
   ]);
 });
 
-test("Get ignores (no .eleventyignore, using setUseGitIgnore(false))", (t) => {
+test("Get ignores (no .eleventyignore, using setUseGitIgnore(false))", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore2", "test/stubs/ignore2/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
 
   evf._setConfig({
     useGitIgnore: false,
@@ -56,7 +56,7 @@ test("Get ignores (no .eleventyignore, using setUseGitIgnore(false))", (t) => {
   });
   evf._setLocalPathRoot("./test/stubs/ignorelocalroot");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalroot/test.md",
     "./test/stubs/ignore2/_site/**",
   ]);
@@ -64,13 +64,13 @@ test("Get ignores (no .eleventyignore, using setUseGitIgnore(false))", (t) => {
   t.deepEqual(evf.getIgnoreGlobs().slice(-1), ["./test/stubs/ignorelocalroot/**/node_modules/**"]);
 });
 
-test("Get ignores (no .gitignore)", (t) => {
+test("Get ignores (no .gitignore)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore3", "test/stubs/ignore3/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
   evf._setLocalPathRoot("./test/stubs/ignorelocalroot");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalroot/test.md",
     "./test/stubs/ignore3/ignoredFolder/**",
     "./test/stubs/ignore3/ignoredFolder/ignored.md",
@@ -83,13 +83,13 @@ test("Get ignores (no .gitignore)", (t) => {
   ]);
 });
 
-test("Get ignores (project .eleventyignore and root .gitignore)", (t) => {
+test("Get ignores (project .eleventyignore and root .gitignore)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore4", "test/stubs/ignore4/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
   evf._setLocalPathRoot("./test/stubs/ignorelocalrootgitignore");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalrootgitignore/thisshouldnotexist12345",
     "./test/stubs/ignorelocalrootgitignore/test.md",
     "./test/stubs/ignore4/ignoredFolder/**",
@@ -103,10 +103,10 @@ test("Get ignores (project .eleventyignore and root .gitignore)", (t) => {
   ]);
 });
 
-test("Get ignores (project .eleventyignore and root .gitignore, using setUseGitIgnore(false))", (t) => {
+test("Get ignores (project .eleventyignore and root .gitignore, using setUseGitIgnore(false))", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore4", "test/stubs/ignore4/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
 
   evf._setConfig({
     useGitIgnore: false,
@@ -116,7 +116,7 @@ test("Get ignores (project .eleventyignore and root .gitignore, using setUseGitI
   });
   evf._setLocalPathRoot("./test/stubs/ignorelocalrootgitignore");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalrootgitignore/test.md",
     "./test/stubs/ignore4/ignoredFolder/**",
     "./test/stubs/ignore4/ignoredFolder/ignored.md",
@@ -128,14 +128,14 @@ test("Get ignores (project .eleventyignore and root .gitignore, using setUseGitI
   ]);
 });
 
-test("Get ignores (no .eleventyignore  .gitignore exists but empty)", (t) => {
+test("Get ignores (no .eleventyignore  .gitignore exists but empty)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore5", "test/stubs/ignore5/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
 
   evf._setLocalPathRoot("./test/stubs/ignorelocalroot");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalroot/test.md",
     "./test/stubs/ignore5/_site/**",
   ]);
@@ -146,13 +146,13 @@ test("Get ignores (no .eleventyignore  .gitignore exists but empty)", (t) => {
   ]);
 });
 
-test("Get ignores (both .eleventyignore and .gitignore exists, but .gitignore is empty)", (t) => {
+test("Get ignores (both .eleventyignore and .gitignore exists, but .gitignore is empty)", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/ignore6", "test/stubs/ignore6/_site", [], eleventyConfig);
-  evf.init();
+  await evf.init();
   evf._setLocalPathRoot("./test/stubs/ignorelocalroot");
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignorelocalroot/test.md",
     "./test/stubs/ignore6/ignoredFolder/**",
     "./test/stubs/ignore6/ignoredFolder/ignored.md",
@@ -181,7 +181,7 @@ test("Bad expected output, this indicates a bug upstream in a dependency.  Input
     },
   });
   evf.setFileSystemSearch(new FileSystemSearch());
-  evf.init();
+  await evf.init();
 
   t.deepEqual(await evf.getFiles(), [
     "./test/stubs-403/template.liquid",
@@ -204,7 +204,7 @@ test("Workaround for Bad expected output, this indicates a bug upstream in a dep
     },
   });
   evf.setFileSystemSearch(new FileSystemSearch());
-  evf.init();
+  await evf.init();
 
   t.deepEqual(await evf.getFiles(), ["./test/stubs-403/template.liquid"]);
 });
@@ -221,7 +221,7 @@ test("Issue #403: all .eleventyignores should be relative paths not absolute pat
       data: false,
     },
   });
-  evf.init();
+  await evf.init();
 
   let globs = await evf.getFileGlobs();
   t.is(
@@ -232,7 +232,7 @@ test("Issue #403: all .eleventyignores should be relative paths not absolute pat
   );
 });
 
-test("Same input and output directories, issues #186 and #1129", (t) => {
+test("Same input and output directories, issues #186 and #1129", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/", "test/stubs/", [], eleventyConfig);
   evf._setConfig({
@@ -243,15 +243,15 @@ test("Same input and output directories, issues #186 and #1129", (t) => {
       includes: "",
     },
   });
-  evf.init();
+  await evf.init();
 
   t.deepEqual(
-    evf.getIgnores().filter((entry) => entry.indexOf("_site") > -1),
+    (await evf.getIgnores()).filter((entry) => entry.indexOf("_site") > -1),
     []
   );
 });
 
-test("Single input file is in the output directory, issues #186", (t) => {
+test("Single input file is in the output directory, issues #186", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles("test/stubs/test.njk", "test/stubs/", ["njk"], eleventyConfig);
   evf._setConfig({
@@ -262,14 +262,14 @@ test("Single input file is in the output directory, issues #186", (t) => {
       includes: "",
     },
   });
-  evf.init();
+  await evf.init();
   t.deepEqual(
-    evf.getIgnores().filter((entry) => entry.indexOf("_site") > -1),
+    (await evf.getIgnores()).filter((entry) => entry.indexOf("_site") > -1),
     []
   );
 });
 
-test("De-duplicated ignores", (t) => {
+test("De-duplicated ignores", async (t) => {
   let eleventyConfig = new TemplateConfig();
   let evf = new EleventyFiles(
     "test/stubs/ignore-dedupe",
@@ -277,7 +277,7 @@ test("De-duplicated ignores", (t) => {
     [],
     eleventyConfig
   );
-  evf.init();
+  await evf.init();
 
   evf._setLocalPathRoot("./test/stubs/ignore-dedupe");
 
@@ -286,7 +286,7 @@ test("De-duplicated ignores", (t) => {
     "./test/stubs/ignore-dedupe/_data/**",
   ]);
 
-  t.deepEqual(evf.getIgnores(), [
+  t.deepEqual(await evf.getIgnores(), [
     "./test/stubs/ignore-dedupe/ignoredFolder",
     "./test/stubs/ignore-dedupe/_site/**",
   ]);

@@ -1,4 +1,6 @@
-const fs = require("fs");
+const fs = require("graceful-fs");
+const util = require("util");
+const readFile = util.promisify(fs.readFile);
 
 const { TemplatePath } = require("@11ty/eleventy-utils");
 
@@ -43,14 +45,14 @@ class EleventyFiles {
 
   /* Overrides this.input and this.inputDir,
    * Useful when input is a file and inputDir is not its direct parent */
-  setInput(inputDir, input) {
+  async setInput(inputDir, input) {
     this.inputDir = inputDir;
     this.input = input;
 
     this.initConfig();
 
     if (this.alreadyInit) {
-      this.init();
+      await this.init();
     }
   }
 
@@ -62,7 +64,7 @@ class EleventyFiles {
     }
   }
 
-  init() {
+  async init() {
     this.alreadyInit = true;
 
     // Input is a directory
@@ -74,7 +76,7 @@ class EleventyFiles {
     }
 
     this.initPassthroughManager();
-    this.setupGlobs();
+    await this.setupGlobs();
   }
 
   get validTemplateGlobs() {
@@ -104,9 +106,9 @@ class EleventyFiles {
     return Array.from(paths);
   }
 
-  restart() {
+  async restart() {
     this.passthroughManager.reset();
-    this.setupGlobs();
+    await this.setupGlobs();
     this._glob = null;
   }
 
@@ -143,7 +145,7 @@ class EleventyFiles {
     this.runMode = runMode;
   }
 
-  initPassthroughManager() {
+  async initPassthroughManager() {
     let mgr = new TemplatePassthroughManager(this.eleventyConfig);
     mgr.setInputDir(this.inputDir);
     mgr.setOutputDir(this.outputDir);
@@ -179,8 +181,8 @@ class EleventyFiles {
     return data.getDataDir();
   }
 
-  setupGlobs() {
-    this.fileIgnores = this.getIgnores();
+  async setupGlobs() {
+    this.fileIgnores = await this.getIgnores();
     this.extraIgnores = this._getIncludesAndDataDirs();
     this.uniqueIgnores = this.getIgnoreGlobs();
 
@@ -207,7 +209,7 @@ class EleventyFiles {
     return Array.from(uniqueIgnores);
   }
 
-  static getFileIgnores(ignoreFiles) {
+  static async getFileIgnores(ignoreFiles) {
     if (!Array.isArray(ignoreFiles)) {
       ignoreFiles = [ignoreFiles];
     }
@@ -219,7 +221,7 @@ class EleventyFiles {
       let dir = TemplatePath.getDirFromFilePath(ignorePath);
 
       if (fs.existsSync(ignorePath) && fs.statSync(ignorePath).size > 0) {
-        let ignoreContent = fs.readFileSync(ignorePath, "utf8");
+        let ignoreContent = await readFile(ignorePath, "utf8");
 
         ignores = ignores.concat(EleventyFiles.normalizeIgnoreContent(dir, ignoreContent));
       }
@@ -275,10 +277,10 @@ class EleventyFiles {
     this.eleventyIgnoreContent = content;
   }
 
-  getIgnores() {
+  async getIgnores() {
     let files = new Set();
-
-    for (let ignore of EleventyFiles.getFileIgnores(this.getIgnoreFiles())) {
+    let ignores = await EleventyFiles.getFileIgnores(this.getIgnoreFiles());
+    for (let ignore of ignores) {
       files.add(ignore);
     }
 

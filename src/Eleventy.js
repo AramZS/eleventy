@@ -271,7 +271,7 @@ class Eleventy {
     this.start = this.getNewTimestamp();
     templateCache.clear();
     this.bench.reset();
-    this.eleventyFiles.restart();
+    await this.eleventyFiles.restart();
     this.extensionMap.reset();
 
     // reload package.json values (if applicable)
@@ -384,10 +384,10 @@ class Eleventy {
       this.eleventyConfig
     );
     this.eleventyFiles.setFileSystemSearch(this.fileSystemSearch);
-    this.eleventyFiles.setInput(this.inputDir, this.input);
+    await this.eleventyFiles.setInput(this.inputDir, this.input);
     this.eleventyFiles.setRunMode(this.runMode);
     this.eleventyFiles.extensionMap = this.extensionMap;
-    this.eleventyFiles.init();
+    await this.eleventyFiles.init();
 
     this.templateData = new TemplateData(this.inputDir, this.eleventyConfig);
     this.templateData.extensionMap = this.extensionMap;
